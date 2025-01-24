@@ -1,8 +1,10 @@
 import { getMetadata } from '../../scripts/aem.js';
 import { loadFragment } from '../fragment/fragment.js';
 
-// media query match that indicates mobile/tablet width
-const isDesktop = window.matchMedia('(min-width: 900px)');
+// media query match that indicates desktop width
+const isDesktop = window.matchMedia('(min-width: 1280px)');
+// media query match that indicates tablet width
+const isTablet = window.matchMedia('(min-width: 768px)');
 
 function closeOnEscape(e) {
   if (e.code === 'Escape') {
@@ -71,7 +73,7 @@ function toggleAllNavSections(sections, expanded = false) {
 function toggleMenu(nav, navSections, forceExpanded = null) {
   const expanded = forceExpanded !== null ? !forceExpanded : nav.getAttribute('aria-expanded') === 'true';
   const button = nav.querySelector('.nav-hamburger button');
-  document.body.style.overflowY = (expanded || isDesktop.matches) ? '' : 'hidden';
+  document.body.style.overflowY = (expanded || isTablet.matches) ? '' : 'hidden';
   nav.setAttribute('aria-expanded', expanded ? 'false' : 'true');
   toggleAllNavSections(navSections, expanded || isDesktop.matches ? 'false' : 'true');
   button.setAttribute('aria-label', expanded ? 'Open navigation' : 'Close navigation');
@@ -104,6 +106,29 @@ function toggleMenu(nav, navSections, forceExpanded = null) {
 }
 
 /**
+ * Add a dedicated class to the active nav link
+ *
+ * @param   {array}  links  - nav links
+ */
+function setActiveLink(links) {
+  const removeTrailingSlash = (url) => url.replace(/\/$/, '');
+
+  links.forEach((link) => {
+    const navUrlObject = new URL(link.href);
+
+    // exclude external links
+    if (navUrlObject.origin !== window.location.origin) return;
+
+    const currentPathWithoutTrailingSlash = removeTrailingSlash(window.location.pathname);
+    const linkPathWithoutTrailingSlash = removeTrailingSlash(navUrlObject.pathname);
+
+    if (currentPathWithoutTrailingSlash === linkPathWithoutTrailingSlash) {
+      link.classList.add('active');
+    }
+  });
+}
+
+/**
  * loads and decorates the header, mainly the nav
  * @param {Element} block The header block element
  */
@@ -117,6 +142,7 @@ export default async function decorate(block) {
   block.textContent = '';
   const nav = document.createElement('nav');
   nav.id = 'nav';
+  nav.classList.add('nav');
   while (fragment.firstElementChild) nav.append(fragment.firstElementChild);
 
   const classes = ['brand', 'sections', 'tools'];
@@ -131,6 +157,10 @@ export default async function decorate(block) {
     brandLink.className = '';
     brandLink.closest('.button-container').className = '';
   }
+  const brandLogo = navBrand.getElementsByTagName('p')[0];
+  const brandText = navBrand.getElementsByTagName('p')[1];
+  brandLogo.classList.add('nav-brand__logo');
+  brandText.classList.add('nav-brand__title');
 
   const navSections = nav.querySelector('.nav-sections');
   if (navSections) {
@@ -145,6 +175,9 @@ export default async function decorate(block) {
       });
     });
   }
+
+  const navLinks = navSections.querySelectorAll(':scope .default-content-wrapper > ul > li > a');
+  setActiveLink(navLinks);
 
   // hamburger for mobile
   const hamburger = document.createElement('div');
