@@ -203,11 +203,27 @@
         "value": ""
       },
       {
-        "component": "richtext",
-        "name": "text",
-        "value": "",
-        "label": "Text",
-        "valueType": "string"
+        "component": "select",
+        "name": "variant",
+        "label": "Variant",
+        "options": [
+          {
+            "name": "Big image",
+            "value": "bigimage"
+          },
+          {
+            "name": "Small image",
+            "value": "smallimage"
+          },
+          {
+            "name": "Centered vertically",
+            "value": "v-center"
+          },
+          {
+            "name": "Centered horizontally",
+            "value": "h-center"
+          }
+        ]
       }
     ]
   }
