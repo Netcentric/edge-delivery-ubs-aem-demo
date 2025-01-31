@@ -143,7 +143,16 @@ export default async function decorate(block) {
   const nav = document.createElement('nav');
   nav.id = 'nav';
   nav.classList.add('nav');
-  while (fragment.firstElementChild) nav.append(fragment.firstElementChild);
+  while (fragment.firstElementChild) {
+    nav.append(fragment.firstElementChild);
+    const h1s = fragment.querySelectorAll('h1');
+    h1s.forEach((h1) => {
+      while (h1.firstChild) {
+        h1.parentNode.insertBefore(h1.firstChild, h1);
+      }
+      h1.parentNode.removeChild(h1);
+    });
+  }
 
   const classes = ['brand', 'sections', 'tools'];
   classes.forEach((c, i) => {
