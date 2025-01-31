@@ -100,14 +100,10 @@ function sampleRUM(checkpoint, data) {
         sampleRUM.enhance = () => {
           // only enhance once
           if (document.querySelector('script[src*="rum-enhancer"]')) return;
-          const { enhancerVersion, enhancerHash } = sampleRUM.enhancerContext || {};
+
           const script = document.createElement('script');
-          if (enhancerHash) {
-            script.integrity = enhancerHash;
-            script.setAttribute('crossorigin', 'anonymous');
-          }
           script.src = new URL(
-            `.rum/@adobe/helix-rum-enhancer@${enhancerVersion || '^2'}/src/index.js`,
+            '.rum/@adobe/helix-rum-enhancer@^2/src/index.js',
             sampleRUM.baseURL,
           ).href;
           document.head.appendChild(script);
@@ -139,12 +135,7 @@ function setup() {
   const scriptEl = document.querySelector('script[src$="/scripts/scripts.js"]');
   if (scriptEl) {
     try {
-      const scriptURL = new URL(scriptEl.src, window.location);
-      if (scriptURL.host === window.location.host) {
-        [window.hlx.codeBasePath] = scriptURL.pathname.split('/scripts/scripts.js');
-      } else {
-        [window.hlx.codeBasePath] = scriptURL.href.split('/scripts/scripts.js');
-      }
+      [window.hlx.codeBasePath] = new URL(scriptEl.src).pathname.split('/scripts/scripts.js');
     } catch (error) {
       // eslint-disable-next-line no-console
       console.log(error);
@@ -372,16 +363,6 @@ function wrapTextNodes(block) {
   const wrap = (el) => {
     const wrapper = document.createElement('p');
     wrapper.append(...el.childNodes);
-    [...el.attributes]
-      // move the instrumentation from the cell to the new paragraph, also keep the class
-      // in case the content is a buttton and the cell the button-container
-      .filter(({ nodeName }) => nodeName === 'class'
-        || nodeName.startsWith('data-aue')
-        || nodeName.startsWith('data-richtext'))
-      .forEach(({ nodeName, nodeValue }) => {
-        wrapper.setAttribute(nodeName, nodeValue);
-        el.removeAttribute(nodeName);
-      });
     el.append(wrapper);
   };
 
@@ -422,7 +403,7 @@ function decorateButtons(element) {
           && twoup.childNodes.length === 1
           && twoup.tagName === 'P'
         ) {
-          a.className = 'button primary';
+          a.className = 'button button--secondary';
           twoup.classList.add('button-container');
         }
         if (
@@ -431,7 +412,7 @@ function decorateButtons(element) {
           && twoup.childNodes.length === 1
           && twoup.tagName === 'P'
         ) {
-          a.className = 'button secondary';
+          a.className = 'button button--tertiary';
           twoup.classList.add('button-container');
         }
       }
@@ -445,16 +426,23 @@ function decorateButtons(element) {
  * @param {string} [prefix] prefix to be added to icon src
  * @param {string} [alt] alt text to be added to icon
  */
-function decorateIcon(span, prefix = '', alt = '') {
+async function decorateIcon(span, prefix = '', alt = '') {
   const iconName = Array.from(span.classList)
     .find((c) => c.startsWith('icon-'))
     .substring(5);
-  const img = document.createElement('img');
-  img.dataset.iconName = iconName;
-  img.src = `${window.hlx.codeBasePath}${prefix}/icons/${iconName}.svg`;
-  img.alt = alt;
-  img.loading = 'lazy';
-  span.append(img);
+
+  const resp = await fetch(`${window.hlx.codeBasePath}${prefix}/icons/${iconName}.svg`);
+  if (resp.ok) {
+    const iconHTML = await resp.text();
+    if (iconHTML.match(/<style/i)) {
+      const img = document.createElement('img');
+      img.alt = alt;
+      img.src = `data:image/svg+xml,${encodeURIComponent(iconHTML)}`;
+      span.appendChild(img);
+    } else {
+      span.innerHTML = iconHTML;
+    }
+  }
 }
 
 /**
@@ -474,14 +462,14 @@ function decorateIcons(element, prefix = '') {
  * @param {Element} main The container element
  */
 function decorateSections(main) {
-  main.querySelectorAll(':scope > div:not([data-section-status])').forEach((section) => {
+  main.querySelectorAll(':scope > div').forEach((section) => {
     const wrappers = [];
     let defaultContent = false;
     [...section.children].forEach((e) => {
-      if ((e.tagName === 'DIV' && e.className) || !defaultContent) {
+      if (e.tagName === 'DIV' || !defaultContent) {
         const wrapper = document.createElement('div');
         wrappers.push(wrapper);
-        defaultContent = e.tagName !== 'DIV' || !e.className;
+        defaultContent = e.tagName !== 'DIV';
         if (defaultContent) wrapper.classList.add('default-content-wrapper');
       }
       wrappers[wrappers.length - 1].append(e);
@@ -622,7 +610,7 @@ async function loadBlock(block) {
  */
 function decorateBlock(block) {
   const shortBlockName = block.classList[0];
-  if (shortBlockName && !block.dataset.blockStatus) {
+  if (shortBlockName) {
     block.classList.add('block');
     block.dataset.blockName = shortBlockName;
     block.dataset.blockStatus = 'initialized';
@@ -631,8 +619,6 @@ function decorateBlock(block) {
     blockWrapper.classList.add(`${shortBlockName}-wrapper`);
     const section = block.closest('.section');
     if (section) section.classList.add(`${shortBlockName}-container`);
-    // eslint-disable-next-line no-use-before-define
-    decorateButtons(block);
   }
 }
 
