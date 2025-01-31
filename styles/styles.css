@@ -343,7 +343,9 @@ button:disabled:hover {
 }
 
 a.button.button--secondary,
-button.button--secondary {
+button.button--secondary,
+a.button.secondary,
+button.secondary {
   --button-bg-color: var(--col-white);
   --button-border-color: var(--col-neutral90);
   --button-text-color: var(--col-neutral90);
@@ -357,7 +359,9 @@ button.button--secondary {
 }
 
 button.button--secondary:disabled,
-button.button--secondary:disabled:hover {
+button.button--secondary:disabled:hover,
+button.secondary:disabled,
+button.secondary:disabled:hover {
   --button-border-color: var(--col-neutral30);
   --button-text-color: var(--col-neutral30);
   --button-icon-color: var(--col-neutral30);
