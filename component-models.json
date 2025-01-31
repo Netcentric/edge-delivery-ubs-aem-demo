@@ -203,7 +203,7 @@
         "value": ""
       },
       {
-        "component": "select",
+        "component": "multiselect",
         "name": "classes",
         "label": "Variant",
         "options": [
@@ -222,6 +222,10 @@
           {
             "name": "Centered horizontally",
             "value": "h-center"
+          },
+          {
+            "name": "Image right-aligned",
+            "value": "image-right"
           }
         ]
       },
