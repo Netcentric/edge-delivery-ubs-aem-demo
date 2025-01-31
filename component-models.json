@@ -204,7 +204,7 @@
       },
       {
         "component": "select",
-        "name": "variant",
+        "name": "text-imageStyle",
         "label": "Variant",
         "options": [
           {
