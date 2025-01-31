@@ -227,7 +227,7 @@
       },
       {
         "component": "richtext",
-        "name": "text",
+        "name": "text-image_text",
         "value": "",
         "label": "Text",
         "valueType": "string"
