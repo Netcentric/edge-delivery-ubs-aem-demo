@@ -350,6 +350,7 @@ button.secondary {
   --button-border-color: var(--col-neutral90);
   --button-text-color: var(--col-neutral90);
   --button-icon-color: var(--col-brand40);
+    font-style: normal;
 
   &:hover,
   &:focus {
@@ -365,6 +366,7 @@ button.secondary:disabled:hover {
   --button-border-color: var(--col-neutral30);
   --button-text-color: var(--col-neutral30);
   --button-icon-color: var(--col-neutral30);
+    font-style: normal;
 }
 
 a.button.button--tertiary,
