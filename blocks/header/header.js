@@ -144,8 +144,14 @@ export default async function decorate(block) {
   nav.id = 'nav';
   nav.classList.add('nav');
   while (fragment.firstElementChild) {
-    console.log(fragment.firstElementChild)
     nav.append(fragment.firstElementChild);
+    const h1 = fragment.querySelector('h1');
+    if (h1) {
+      while (h1.firstChild) {
+      h1.parentNode.insertBefore(h1.firstChild, h1);
+      }
+      h1.parentNode.removeChild(h1);
+    }
   }
 
   const classes = ['brand', 'sections', 'tools'];
