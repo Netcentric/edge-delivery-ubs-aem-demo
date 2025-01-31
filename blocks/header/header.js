@@ -148,7 +148,7 @@ export default async function decorate(block) {
     const h1s = fragment.querySelectorAll('h1');
     h1s.forEach((h1) => {
       while (h1.firstChild) {
-      h1.parentNode.insertBefore(h1.firstChild, h1);
+        h1.parentNode.insertBefore(h1.firstChild, h1);
       }
       h1.parentNode.removeChild(h1);
     });
