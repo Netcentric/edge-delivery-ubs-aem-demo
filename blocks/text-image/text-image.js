@@ -7,11 +7,7 @@ export default function decorate(block) {
   const firstChild = block.firstElementChild;
   const secondChild = firstChild.nextElementSibling;
   if (secondChild) {
-    if (block.classList.contains('image-right')) {
-      firstChild.parentElement.appendChild(secondChild);
-    } else {
-      firstChild.appendChild(secondChild);
-    }
+    firstChild.appendChild(secondChild);
   }
   // add variant classnames
   variantsClassesToBEM(block.classList, variantClasses, blockName);
