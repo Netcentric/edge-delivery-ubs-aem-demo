@@ -6,8 +6,9 @@ export default function decorate(block) {
   const blockName = 'text-image';
   // add variant classnames
   if (block.classList.contains('image-right')) {
-    const secondChild = block.children[1];
-    block.insertBefore(secondChild, block.firstChild);
+    const container = block.firstElementChild;
+    const secondChild = container.children[1];
+    container.insertBefore(secondChild, container.firstChild);
   }
   variantsClassesToBEM(block.classList, variantClasses, blockName);
   block.firstElementChild.classList.add(`${blockName}__container`);
